@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import org.json.*;
 
 public class GUI {
     private JFrame frame;
@@ -54,6 +55,35 @@ public class GUI {
     // Inform user that the entered word is invalid
     void invalidWord() {
         JOptionPane.showMessageDialog(null, "Invalid word!");
+        return;
+    }
+
+    // Read JSON file to get previous guess history
+    void getScoreHistory() {
+        String jsonName = "score.json";
+        JSONObject obj = new JSONObject(jsonName);
+        for (int i = 1; i <= 6; i++) {
+            int currGuessFreq = String.valueOf(obj.getString(String.valueOf(i)));
+            guessFreq[i] += currGuessFreq;
+        }
+        return;
+    }
+
+    // Write to JSON file
+    void writeScoreHistory() {
+        String jsonName = "score.json";
+        JSONObject = new JSONObject();
+
+        for (int i = 1; i <= 6; i++) {
+            JSONObject.put(String.valueOf(i), guessFreq[i]);
+        }
+        try {
+            FileWriter file = new FileWriter(jsonName);
+            file.write(JSONObject.toJSONString());
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return;
     }
 
@@ -493,6 +523,8 @@ public class GUI {
     // Function to create starting screen
     void initializeStartingScreen() {
         row = col = 0;
+        writeScoreHistory();
+        getScoreHistory();
         // Reset frame and panel if it's been initialized already
         if (!firstTime) {
             resetPanel();
